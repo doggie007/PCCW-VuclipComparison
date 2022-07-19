@@ -6,7 +6,10 @@
 import scrapy
 
 
-class ViuScrapyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class ProductItem(scrapy.Item):
+    title = scrapy.Field()
+    subtitle = scrapy.Field()
+    image_url = scrapy.Field()
+    category = scrapy.Field()
+    synopsis = scrapy.Field()
+    off_shelf_date = scrapy.Field()

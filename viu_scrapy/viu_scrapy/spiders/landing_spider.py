@@ -1,33 +1,47 @@
 import scrapy
+from ..items import ProductItem
+
 
 class LandingScraper(scrapy.Spider):
-    name = 'landing'
-    allowed_domains = ['qa.ottuat.com']
-    start_urls = ['https://qa.ottuat.com/ott/hk']
+    name = "landing"
+    allowed_domains = ["qa.ottuat.com"]
+    start_urls = ["https://qa.ottuat.com/ott/hk"]
 
     def parse(self, response):
-        for box in response.css('div.css-79elbk'):
-            yield {
-                'title': box.css('div.MuiTypography-root.MuiTypography-titleSm.css-1jk6smf::text').get(),
-                'card_description': box.css('div.MuiTypography-root.MuiTypography-bodySm.css-jgl8ul::text').get(),
-                'card_image_url': box.css('img::attr(src)').get(),
-            }
-    #     next_page = response.css('a::attr(href)').get()
-    #     if next_page is not None:
-    #         yield response.follow(next_page, self.parse_main)
+        for container in response.css("div.css-79elbk"):
+            title = container.css(
+                "div.MuiTypography-root.MuiTypography-titleSm.css-1jk6smf::text").get()
+            subtitle = container.css(
+                "div.MuiTypography-root.MuiTypography-bodySm.css-jgl8ul::text").get()
+            image_url = container.css("img::attr(src)").get()
+            link_page_url = container.css('a::attr(href)').get()
 
-    # def parse_main(self, response):
-    #     box = response.css('div.MuiContainer-root.css-1ireu8r').get()
-    #     if box is not None:
+            product = ProductItem()
+            product['title'] = title
+            product['subtitle'] = subtitle
+            product['image_url'] = image_url
 
+            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product), dont_filter=True)
 
-
-
-
+    def parse_link_page(self, response, product):
+        product["category"] = response.css("#category::text").get()
+        product["synopsis"] = response.css("#synopsis::text").get()
+        try:
+            product["off_shelf_date"] = response.css(
+                "#off_shelf_date::text")[2].get()
+        except:
+            product["off_shelf_date"] = None
+        return product
 
 
 """
 scrapy crawl landing -O info.json
+
+
+response.css("span::text")
+.MuiChip-label.MuiChip-labelMedium.css-14vsv3w
+
+
 
 
 Box 
