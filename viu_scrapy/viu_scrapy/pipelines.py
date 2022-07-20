@@ -7,29 +7,34 @@
 # useful for handling different item types with a single interface
 import pymongo
 from itemadapter import ItemAdapter
+from scrapy.utils.project import get_project_settings
+from .items import ProductItem
+import logging
 
-class MongoPipeline:
+settings = get_project_settings()
 
-    collection_name = 'scrapy_items'
+class MongoDBPipeline:
 
-    def __init__(self, mongo_uri, mongo_db):
-        self.mongo_uri = mongo_uri
-        self.mongo_db = mongo_db
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(
-            mongo_uri=crawler.settings.get('MONGO_URI'),
-            mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
+    def __init__(self):
+        connection = pymongo.MongoClient(
+            settings.get('MONGO_HOST'),
+            settings.get('MONGO_PORT')
         )
-
-    def open_spider(self, spider):
-        self.client = pymongo.MongoClient(self.mongo_uri)
-        self.db = self.client[self.mongo_db]
-
-    def close_spider(self, spider):
-        self.client.close()
+        self.db = connection[settings.get('MONGO_DB_NAME')]
+        self.collection = self.db[settings['MONGO_COLLECTION_NAME']]
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert_one(ItemAdapter(item).asdict())
+        #Check title is not empty
+        if item["title"] == None:
+            logging.debug("Title is null")
+        else:
+            # #Check not a duplicate
+            # duplicate_check = self.collection.count_documents({'title': item['title']})
+            # if duplicate_check == 0:
+            #     #No duplicates
+            #     self.collection.insert_one(ItemAdapter(item).asdict())
+            #     logging.debug("Successfully added item to DB")
+            # else:
+            #     logging.debug("Same title exists!")
+            self.collection.insert_one(ItemAdapter(item).asdict())
         return item

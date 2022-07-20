@@ -27,9 +27,10 @@ HTTPERROR_ALLOWED_CODES = [404]
 # MONGO DB SETTINGS
 MONGO_HOST = "localhost"
 MONGO_PORT = 27017
-MONGO_DB_NAME = "logrocket"
-MONGO_COLLECTION_NAME = "featured_articles"
+MONGO_DB_NAME = "Testing"
+MONGO_COLLECTION_NAME = "First"
 
+ITEM_PIPELINES = {'viu_scrapy.pipelines.MongoDBPipeline': 100}
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
