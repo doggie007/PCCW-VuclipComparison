@@ -25,12 +25,15 @@ FEED_EXPORT_ENCODING = 'utf-8'
 HTTPERROR_ALLOWED_CODES = [404]
 
 # MONGO DB SETTINGS
-MONGO_HOST = "localhost"
-MONGO_PORT = 27017
-MONGO_DB_NAME = "Testing"
-MONGO_COLLECTION_NAME = "First"
+MONGO_URI = 'mongodb://localhost:27017'
+MONGO_DATABASE = 'Testing'
 
-ITEM_PIPELINES = {'viu_scrapy.pipelines.MongoDBPipeline': 100}
+
+
+ITEM_PIPELINES = {
+    'viu_scrapy.pipelines.MongoDBPipeline': 100
+}
+
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
