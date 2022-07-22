@@ -14,7 +14,7 @@ class NewSpider(scrapy.Spider):
     start_urls = ["https://qa.ottuat.com/ott/hk"]
 
     custom_settings = {
-        'COLLECTION_NAME' : 'First'
+        'COLLECTION_NAME' : 'New'
     }
 
     PATIENCE = 15
@@ -22,8 +22,7 @@ class NewSpider(scrapy.Spider):
     def __init__(self):
         #Configure chrome browser
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")
-        
+        chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=r"C:\Users\james\Desktop\My Stuff\PCCW\PCCW-VuclipComparison\chromedriver")
 
     def get_driver_response(self):

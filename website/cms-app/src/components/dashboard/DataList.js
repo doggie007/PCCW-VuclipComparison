@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import Link from "@mui/material/Link";
-import Avatar from "@mui/material/Avatar";
 import { Image } from "mui-image";
 
 // const rows = [

@@ -25,8 +25,10 @@ FEED_EXPORT_ENCODING = 'utf-8'
 HTTPERROR_ALLOWED_CODES = [404]
 
 # MONGO DB SETTINGS
-MONGO_URI = 'mongodb://localhost:27017'
-MONGO_DATABASE = 'Testing'
+USERNAME = "admin"
+PASSWORD = "fZ3XJTxZ1HxRKTWH"
+MONGO_URI = f'mongodb+srv://{USERNAME}:{PASSWORD}@viustarting.jqgssgy.mongodb.net/'
+MONGO_DATABASE = 'Viu'
 
 
 
