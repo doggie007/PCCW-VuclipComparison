@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -24,6 +25,9 @@ import Orders from "./Orders";
 
 import { DataGrid } from "@mui/x-data-grid";
 
+import ListView from "./DataList";
+import NewListView from "./NewDataList";
+
 function Copyright(props) {
 	return (
 		<Typography
@@ -39,16 +43,18 @@ function Copyright(props) {
 	);
 }
 
-const rows: GridRowsProp = [
-	{ id: 1, col1: "Hello", col2: "World" },
-	{ id: 2, col1: "DataGridPro", col2: "is Awesome" },
-	{ id: 3, col1: "MUI", col2: "is Amazing" },
-];
+// const rows = [
+// 	{ id: 1, col1: "Hello", col2: "World" },
+// 	{ id: 2, col1: "DataGridPro", col2: "is Awesome" },
+// 	{ id: 3, col1: "MUI", col2: "is Amazing" },
+// ];
 
-const columns: GridColDef[] = [
-	{ field: "col1", headerName: "Column 1", width: 150 },
-	{ field: "col2", headerName: "Column 2", width: 150 },
-];
+// const columns = [
+// 	{ field: "col1", headerName: "Column 1", width: 150 },
+// 	{ field: "col2", headerName: "Column 2", width: 150 },
+// ];
+
+const someData = { 1: 2 };
 
 const drawerWidth = 240;
 
@@ -145,7 +151,6 @@ function DashboardContent() {
 							justifyContent: "flex-end",
 						}}
 					>
-						{/* <h3>Welcome</h3> */}
 						<IconButton onClick={toggleDrawer}>
 							<ChevronLeftIcon />
 						</IconButton>
@@ -166,10 +171,10 @@ function DashboardContent() {
 					}}
 				>
 					<Toolbar />
-					<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-						<Grid container spacing={3}>
+					<Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+						<Grid container rowSpacing={4}>
 							{/* Chart */}
-							<Grid item xs={12} md={8} lg={9}>
+							{/* <Grid item xs={12} md={8} lg={9}>
 								<Paper
 									sx={{
 										p: 2,
@@ -180,9 +185,10 @@ function DashboardContent() {
 								>
 									<Chart />
 								</Paper>
-							</Grid>
+							</Grid> */}
+
 							{/* Recent Deposits */}
-							<Grid item xs={12} md={4} lg={3}>
+							{/* <Grid item xs={12} md={4} lg={3}>
 								<Paper
 									sx={{
 										p: 2,
@@ -193,20 +199,32 @@ function DashboardContent() {
 								>
 									<Deposits />
 								</Paper>
-							</Grid>
-							{/* Recent Orders */}
+							</Grid> */}
+
+							{/* sx={{ p: 2, display: "flex", flexDirection: "column" }} */}
+							{/* <Grid item xs={12}>
+								<Paper>
+									<div style={{ height: "50vh", width: "100%" }}>
+										<div style={{ display: "flex", height: "100%" }}>
+											<div style={{ flexGrow: 1 }}>
+												<DataGrid rows={rows} columns={columns} />
+											</div>
+										</div>
+									</div>
+								</Paper>
+							</Grid> */}
+
 							<Grid item xs={12}>
-								<Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-									<Orders />
+								<Paper>
+									<ListView></ListView>
 								</Paper>
 							</Grid>
-						</Grid>
-						<Grid item xs={12}>
-							<Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-								<div style={{ height: 300, width: "100%" }}>
-									<DataGrid rows={rows} columns={columns} />
-								</div>
-							</Paper>
+
+							<Grid item xs={12}>
+								<Paper>
+									<NewListView></NewListView>
+								</Paper>
+							</Grid>
 						</Grid>
 					</Container>
 				</Box>
