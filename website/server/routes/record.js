@@ -11,7 +11,33 @@ const dbo = require("../db/conn");
 // This help convert the id from string to ObjectId for the _id.
 const ObjectId = require("mongodb").ObjectId;
 
-// This section will help you get a list of all the records.
+function getValidatedList(result, keyName) {
+	// Remove items without title/name
+	result = result.filter((item) => !(item[keyName] === null));
+
+	// Find duplicates and decide
+	// Group by the name of the key
+	var groupedByKey = result.reduce(function (reduced, a) {
+		reduced[a[keyName]] = reduced[a[keyName]] || [];
+		reduced[a[keyName]].push(a);
+		return reduced;
+	}, Object.create(null));
+
+	// Filter by number of occurrences for each key
+	var filtered = Object.keys(groupedByKey).reduce(function (filtered, key) {
+		// Select first element of list in duplicated items
+		filtered[key] = groupedByKey[key][0];
+		return filtered;
+	}, {});
+
+	// Flatten to array of values
+	var filtered_values = Object.keys(filtered).map(function (key) {
+		return filtered[key];
+	});
+
+	return filtered_values;
+}
+
 recordRoutes.route("/data/production").get(function (req, res) {
 	let db_connect = dbo.getDb("Viu");
 	db_connect
@@ -19,7 +45,7 @@ recordRoutes.route("/data/production").get(function (req, res) {
 		.find({})
 		.toArray(function (err, result) {
 			if (err) throw err;
-			res.json(result);
+			res.json(getValidatedList(result, "name"));
 		});
 });
 
@@ -30,9 +56,70 @@ recordRoutes.route("/data/new").get(function (req, res) {
 		.find({})
 		.toArray(function (err, result) {
 			if (err) throw err;
-			res.json(result);
+			res.json(getValidatedList(result, "title"));
 		});
 });
+
+// function getUsers(collectionName) {
+// 	let db_connect = dbo.getDb("Viu");
+// 	db_connect
+// 		.collection(collectionName)
+// 		.find()
+// 		.toArray(function (err, result) {
+// 			if (err) {
+// 				// Reject the Promise with an error
+// 				return reject(err);
+// 			}
+
+// 			return result;
+// 		});
+// }
+
+// recordRoutes.route("/data/combined").get(function (req, res) {
+// let db_connect = dbo.getDb("Viu");
+// var this.saved = undefined
+// db_connect
+//     .collection("New")
+//     .find({})
+//     .toArray()
+// 		.collection(collectionName)
+// 		.find()
+// 		.toArray(function (err, result) {
+// 			if (err) {
+// 				// Reject the Promise with an error
+// 				return reject(err);
+// 			}
+// 			return result;
+// 		});
+// var a = getUsers("New");
+// var b = a.then(function (resultA) {
+// 	return getUsers("Production");
+// });
+// return Promise.all([a, b]).then(function ([resultA, resultB]) {
+// 	let newData = getValidatedList(resultA, "title");
+// 	let productionData = getValidatedList(resultB, "name");
+// 	// new is smaller
+// 	// get matching title/name
+// 	// var matchingNewData = newData.filter((itemNew) =>
+// 	// 	productionData.some(
+// 	// 		(itemProduction) => itemProduction["title"] === itemNew["name"]
+// 	// 	)
+// 	// );
+// 	// // same matching for production data
+// 	// var matchingProductionData = matchingProdctionData.filter(
+// 	// 	(itemProduction) =>
+// 	// 		matchingNewData.some(
+// 	// 			(itemNew) => itemProduction["title"] == itemNew["name"]
+// 	// 		)
+// 	// );
+// 	res.json(newData);
+// 	// res.json(newData.concat(productionData));
+// 	// res.json({
+// 	// 	newData: matchingNewData,
+// 	// 	productionData: matchingProductionData,
+// 	// });
+// });
+// });
 
 // // This section will help you get a single record by id
 // recordRoutes.route("/record/:id").get(function (req, res) {
