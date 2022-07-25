@@ -5,6 +5,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Image } from "mui-image";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+
 import axios from "axios";
 
 // Change image url parameter to enhance quality
@@ -19,20 +21,20 @@ const productionColumns = [
 	{ field: "name", headerName: "Name", minWidth: 150, flex: 0.9 },
 	{ field: "category_name", headerName: "Category", minWidth: 150, flex: 0.9 },
 	{ field: "synopsis", headerName: "Synopsis", minWidth: 200, flex: 1 },
-	{
-		field: "product_id",
-		headerName: "Product ID",
-		type: "number",
-		minWidth: 100,
-		flex: 0.5,
-	},
-	{
-		field: "series_id",
-		headerName: "Series ID",
-		type: "number",
-		minWidth: 100,
-		flex: 0.5,
-	},
+	// {
+	// 	field: "product_id",
+	// 	headerName: "Product ID",
+	// 	type: "number",
+	// 	minWidth: 100,
+	// 	flex: 0.5,
+	// },
+	// {
+	// 	field: "series_id",
+	// 	headerName: "Series ID",
+	// 	type: "number",
+	// 	minWidth: 100,
+	// 	flex: 0.5,
+	// },
 	{
 		field: "image_url",
 		headerName: "Image",
@@ -40,7 +42,9 @@ const productionColumns = [
 		flex: 1,
 		renderCell: (params) => {
 			// return <img src={params.value} />;
-			return <Image src={manipulateImageURL(params.value)} color="blue" />;
+			return (
+				<Image src={manipulateImageURL(params.value)} aspectRatio={16 / 9} />
+			);
 		},
 	},
 ];
@@ -224,8 +228,17 @@ export default function ListView() {
 	}, []);
 
 	return (
-		<Grid container columnSpacing={5}>
+		<Grid container columnSpacing={5} sx={{ ml: "auto" }}>
 			<Grid itmem xs={6}>
+				<Typography
+					component="h1"
+					variant="h6"
+					color="inherit"
+					noWrap
+					sx={{ flexGrow: 0.7 }}
+				>
+					Viu Production
+				</Typography>
 				<Paper>
 					<Box sx={{ height: "85vh", width: "100%" }}>
 						<DataGrid
@@ -242,6 +255,15 @@ export default function ListView() {
 			</Grid>
 
 			<Grid item xs={6}>
+				<Typography
+					component="h1"
+					variant="h6"
+					color="inherit"
+					noWrap
+					sx={{ flexGrow: 0.7 }}
+				>
+					Viu QA
+				</Typography>
 				<Paper>
 					<Box sx={{ height: "85vh", width: "100%" }}>
 						<DataGrid
