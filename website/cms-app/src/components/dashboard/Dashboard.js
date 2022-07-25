@@ -23,10 +23,8 @@ import Chart from "./Chart";
 import Deposits from "./Deposits";
 import Orders from "./Orders";
 
-import { DataGrid } from "@mui/x-data-grid";
-
 import ListView from "./DataList";
-import NewListView from "./NewDataList";
+// import NewListView from "./NewDataList";
 
 function Copyright(props) {
 	return (
@@ -102,7 +100,17 @@ const Drawer = styled(MuiDrawer, {
 	},
 }));
 
-const mdTheme = createTheme();
+const mdTheme = createTheme({
+	breakpoints: {
+		values: {
+			xs: 0,
+			sm: 600,
+			md: 900,
+			lg: 1200,
+			xl: 1700,
+		},
+	},
+});
 
 function DashboardContent() {
 	const [open, setOpen] = React.useState(true);
@@ -172,9 +180,9 @@ function DashboardContent() {
 				>
 					<Toolbar />
 					<Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-						<Grid container rowSpacing={4}>
-							{/* Chart */}
-							{/* <Grid item xs={12} md={8} lg={9}>
+						{/* <Grid container rowSpacing={4}> */}
+						{/* Chart */}
+						{/* <Grid item xs={12} md={8} lg={9}>
 								<Paper
 									sx={{
 										p: 2,
@@ -187,8 +195,8 @@ function DashboardContent() {
 								</Paper>
 							</Grid> */}
 
-							{/* Recent Deposits */}
-							{/* <Grid item xs={12} md={4} lg={3}>
+						{/* Recent Deposits */}
+						{/* <Grid item xs={12} md={4} lg={3}>
 								<Paper
 									sx={{
 										p: 2,
@@ -201,8 +209,8 @@ function DashboardContent() {
 								</Paper>
 							</Grid> */}
 
-							{/* sx={{ p: 2, display: "flex", flexDirection: "column" }} */}
-							{/* <Grid item xs={12}>
+						{/* sx={{ p: 2, display: "flex", flexDirection: "column" }} */}
+						{/* <Grid item xs={12}>
 								<Paper>
 									<div style={{ height: "50vh", width: "100%" }}>
 										<div style={{ display: "flex", height: "100%" }}>
@@ -214,18 +222,14 @@ function DashboardContent() {
 								</Paper>
 							</Grid> */}
 
-							<Grid item xs={12}>
-								<Paper>
-									<ListView></ListView>
-								</Paper>
-							</Grid>
+						<ListView></ListView>
 
-							<Grid item xs={12}>
+						{/* <Grid item xs={12}>
 								<Paper>
 									<NewListView></NewListView>
 								</Paper>
-							</Grid>
-						</Grid>
+							</Grid> */}
+						{/* </Grid> */}
 					</Container>
 				</Box>
 			</Box>
