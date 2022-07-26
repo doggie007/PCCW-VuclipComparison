@@ -23,7 +23,9 @@ import Chart from "./Chart";
 import Deposits from "./Deposits";
 import Orders from "./Orders";
 
-import ListView from "./DataList";
+// import ListView from "./DataList";
+import CollapsibleTable from "./ImprovedDataList";
+import AnotherCollapsibleTable from "./AnotherList";
 // import NewListView from "./NewDataList";
 
 function Copyright(props) {
@@ -222,8 +224,7 @@ function DashboardContent() {
 								</Paper>
 							</Grid> */}
 
-						<ListView></ListView>
-
+						<CollapsibleTable></CollapsibleTable>
 						{/* <Grid item xs={12}>
 								<Paper>
 									<NewListView></NewListView>

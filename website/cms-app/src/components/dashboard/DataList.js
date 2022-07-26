@@ -9,6 +9,8 @@ import Typography from "@mui/material/Typography";
 
 import axios from "axios";
 
+const API_ENDPOINT = "http://localhost:5000";
+
 // Change image url parameter to enhance quality
 function manipulateImageURL(link) {
 	const url = new URL(link);
@@ -191,8 +193,8 @@ export default function ListView() {
 	const [productionData, setProduction] = useState([]);
 
 	const fetchData = () => {
-		const getNew = axios.get(`http://localhost:5000/data/new`);
-		const getProduction = axios.get(`http://localhost:5000/data/production`);
+		const getNew = axios.get(`${API_ENDPOINT}/data/new`);
+		const getProduction = axios.get(`${API_ENDPOINT}/data/production`);
 		axios.all([getNew, getProduction]).then(
 			axios.spread((...allData) => {
 				const allNewData = allData[0].data;
@@ -208,18 +210,11 @@ export default function ListView() {
 					allProductionData.find((obj) => obj["name"] === item["title"])
 				);
 
-				// console.log(matchingNewData);
-				// console.log(matchingProductionData);
 				setNew(matchingNewData);
 				setProduction(matchingProductionData);
 			})
 		);
 	};
-	// const process = () => {
-
-	// 	console.log(matchingNewData);
-	// 	console.log(matchingProductionData);
-	// };
 
 	// This method fetches the records from the database.
 	useEffect(() => {
