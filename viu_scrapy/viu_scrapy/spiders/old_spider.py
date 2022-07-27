@@ -17,17 +17,17 @@ class OldSpider(scrapy.Spider):
     start_urls = ["https://www.viu.com/ott/hk/"]
 
     #Seconds allowed for rendering page content
-    PATIENCE = 20
+    PATIENCE = 15
 
     custom_settings = {
-    'COLLECTION_NAME' : 'Production'
+        'COLLECTION_NAME' : 'Tester'
     }
 
 
     def __init__(self):
         #Configure chrome browser
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         
         self.driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=r"C:\Users\james\Desktop\My Stuff\PCCW\PCCW-VuclipComparison\chromedriver")
 
@@ -37,7 +37,8 @@ class OldSpider(scrapy.Spider):
         return Selector(text = self.driver.page_source.encode('utf-8'))
 
     def parse(self, response):
-        
+        times = 0
+
         self.driver.get(response.url)
         rendered_response = self.get_driver_response()
 
@@ -61,14 +62,19 @@ class OldSpider(scrapy.Spider):
             product['series_id'] = series_id
             product['synopsis'] = synopsis
             product['image_url'] = response.urljoin(image_url)
+            product['url'] = response.urljoin(link_page_url)
 
-            yield product
+            # yield product
 
-            # yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product), dont_filter=True)
+            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product))
+            if times == 4:
+                break
+            
+            times += 1
         
         #All subpages
-        anchors = rendered_response.css("ul.v-nav li a")
-        yield from response.follow_all(anchors, callback=self.parse_subpage)
+        # anchors = rendered_response.css("ul.v-nav li a")
+        # yield from response.follow_all(anchors, callback=self.parse_subpage)
             
 
     def parse_subpage(self, response):
@@ -126,7 +132,18 @@ class OldSpider(scrapy.Spider):
             yield product
 
 
-    # def parse_link_page(self, response, product):
+    def parse_link_page(self, response, product):
+        self.driver.get(response.url)
+        episode_details = WebDriverWait(self.driver, self.PATIENCE).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".video-epi-details")))
+        # series_details = WebDriverWait(self.driver, self.PATIENCE).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".video-sum")))
+        print(episode_details.text)
+        # print(episode_details.text)
+
+        product['episode_details'] = episode_details.text
+        # product['series_details'] = series_details.text
+        return product
+
+
 
 
 

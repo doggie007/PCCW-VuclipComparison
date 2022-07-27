@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "js-levenshtein": "^1.1.6",
     "mongodb": "^4.8.0",
     "mui-image": "^1.0.7",
     "react": "^18.2.0",
@@ -22,6 +23,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.1.12",
+    "string-similarity": "^4.0.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

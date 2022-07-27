@@ -18,9 +18,38 @@ import { Image } from "mui-image";
 import { Grid } from "@mui/material";
 import { Container } from "@mui/system";
 import Divider from "@mui/material/Divider";
+import Chip from "@mui/material/Chip";
 
 import axios from "axios";
 import { useState, useEffect } from "react";
+
+var stringSimilarity = require("string-similarity");
+
+function getStringSimilarity(s1, s2) {
+	return stringSimilarity.compareTwoStrings(s1 || "", s2 || "");
+}
+function round3dp(num) {
+	return Math.round(num * 1000) / 10;
+}
+
+// const levenshtein = require("js-levenshtein");
+// function similarity(s1, s2) {
+// 	if (s1 === null) {
+// 		s1 = "";
+// 	}
+// 	if (s2 === null) {
+// 		s2 = "";
+// 	}
+// 	if (s1 == s2) {
+// 		return 1;
+// 	}
+// 	var longer = s1.length > s2.length ? s1 : s2;
+// 	var shorter = s1.length <= s2.length ? s1 : s2;
+
+// 	console.log(longer);
+// 	console.log(shorter);
+// 	return (longer.length - levenshtein(s1, s2)) / parseFloat(longer.length);
+// }
 
 const API_ENDPOINT = "http://localhost:5000";
 
@@ -49,7 +78,27 @@ function manipulateImageURL(link) {
 
 function Row(props) {
 	const { row } = props;
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
+
+	var synopsisMatch = getStringSimilarity(
+		row.newData.synopsis,
+		row.productionData.synopsis
+	);
+	var categoryMatch = getStringSimilarity(
+		row.newData.subtitle,
+		row.productionData.category_name
+	);
+	var overallSimilarity = round3dp((synopsisMatch + categoryMatch) / 2);
+	synopsisMatch = round3dp(synopsisMatch);
+	categoryMatch = round3dp(categoryMatch);
+
+	function getChipColor(similarity) {
+		return similarity === 100
+			? "success"
+			: similarity > 75
+			? "warning"
+			: "error";
+	}
 
 	return (
 		<React.Fragment>
@@ -68,7 +117,17 @@ function Row(props) {
 						{row.newData.title}
 					</Typography>
 				</TableCell>
-				<TableCell align="right">{row.matching ? "Yes" : "No"}</TableCell>
+				<TableCell align="center">
+					<Chip
+						label={overallSimilarity + "%"}
+						variant="outlined"
+						color={getChipColor(overallSimilarity)}
+					/>
+					{/* <Box sx={{ background: "blue", cornerRadius: "50" }}>
+						{}
+						%
+					</Box> */}
+				</TableCell>
 			</TableRow>
 			<TableRow>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -77,7 +136,11 @@ function Row(props) {
 							sx={{ margin: 1, padding: 1, borderRadius: 3 }}
 							style={{ background: "#DBF1FF" }}
 						>
-							<Table size="small" aria-label="caption">
+							<Table
+								size="small"
+								aria-label="caption"
+								style={{ width: "auto", tableLayout: "auto" }}
+							>
 								<caption>
 									Product ID: {row.productionData.product_id} | Series ID:{" "}
 									{row.productionData.series_id}
@@ -86,13 +149,29 @@ function Row(props) {
 									<TableRow>
 										<TableCell></TableCell>
 										<TableCell>
-											<Typography>Title</Typography>
+											<Typography>Title </Typography>
 										</TableCell>
 										<TableCell>
-											<Typography>Category</Typography>
+											<Typography>
+												Category{"  "}
+												<Chip
+													label={categoryMatch + "%"}
+													variant="filled"
+													size="small"
+													color={getChipColor(categoryMatch)}
+												/>
+											</Typography>
 										</TableCell>
 										<TableCell>
-											<Typography>Synopsis</Typography>
+											<Typography>
+												Synopsis{"  "}
+												<Chip
+													label={synopsisMatch + "%"}
+													variant="filled"
+													size="small"
+													color={getChipColor(synopsisMatch)}
+												/>
+											</Typography>
 										</TableCell>
 										<TableCell align="center">
 											<Typography>Image</Typography>
@@ -102,13 +181,16 @@ function Row(props) {
 								<TableBody>
 									<TableRow>
 										<TableCell>QA</TableCell>
-										<TableCell>{row.newData.title}</TableCell>
+										<TableCell style={{ whiteSpace: "nowrap" }}>
+											{row.newData.title}
+										</TableCell>
 										<TableCell>{row.newData.subtitle}</TableCell>
 										<TableCell>{row.newData.synopsis}</TableCell>
 										<TableCell>
 											<Image
 												src={row.newData.image_url}
 												duration={1500}
+												width={350}
 												sx={{
 													maxWidth: { xs: 350, md: 300 },
 												}}
@@ -117,7 +199,7 @@ function Row(props) {
 									</TableRow>
 									<TableRow>
 										<TableCell>Viu</TableCell>
-										<TableCell>
+										<TableCell style={{ whiteSpace: "nowrap" }}>
 											{row.productionData.name ===
 											row.productionData.series_name ? (
 												<p>{row.productionData.name}</p>
@@ -182,6 +264,7 @@ export default function CollapsibleTable() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [rows, setRows] = useState([]);
+	const { loading, setLoading } = useState([true]);
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -217,6 +300,7 @@ export default function CollapsibleTable() {
 				});
 				console.log(matchingRows);
 				setRows(matchingRows);
+				setLoading(true);
 			})
 		);
 	};
@@ -244,7 +328,7 @@ export default function CollapsibleTable() {
 								Title
 							</Typography>
 						</TableCell>
-						<TableCell align="right">
+						<TableCell align="right" width="50">
 							<Typography
 								component="h1"
 								variant="h6"

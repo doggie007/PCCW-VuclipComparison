@@ -15,6 +15,24 @@ function getValidatedList(result, keyName) {
 	// Remove items without title/name
 	result = result.filter((item) => !(item[keyName] === null));
 
+	// Cleaning data
+	if (keyName === "title") {
+		result = result.map((item) => {
+			// remove <(QA)> from title
+			if (item[keyName].startsWith("(QA) ")) {
+				item[keyName] = item[keyName].split("(QA) ").pop();
+			}
+			// remove <節目簡介:> from synopsis
+			if (
+				item["synopsis"] !== null &&
+				item["synopsis"].startsWith("節目簡介: ")
+			) {
+				item["synopsis"] = item["synopsis"].split("節目簡介: ").pop();
+			}
+			return item;
+		});
+	}
+
 	// Find duplicates and decide
 	// Group by the name of the key
 	var groupedByKey = result.reduce(function (reduced, a) {
@@ -25,8 +43,9 @@ function getValidatedList(result, keyName) {
 
 	// Filter by number of occurrences for each key
 	var filtered = Object.keys(groupedByKey).reduce(function (filtered, key) {
-		// Select first element of list in duplicated items
-		filtered[key] = groupedByKey[key][0];
+		// Select last element of list in duplicated items
+		// Observation from synopsis from other pages are the longer ones
+		filtered[key] = groupedByKey[key][groupedByKey[key].length - 1];
 		return filtered;
 	}, {});
 
@@ -52,7 +71,7 @@ recordRoutes.route("/data/production").get(function (req, res) {
 recordRoutes.route("/data/new").get(function (req, res) {
 	let db_connect = dbo.getDb();
 	db_connect
-		.collection("First")
+		.collection("New")
 		.find({})
 		.toArray(function (err, result) {
 			if (err) throw err;

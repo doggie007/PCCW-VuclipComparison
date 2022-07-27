@@ -14,7 +14,7 @@ class NewSpider(scrapy.Spider):
     start_urls = ["https://qa.ottuat.com/ott/hk"]
 
     custom_settings = {
-        'COLLECTION_NAME' : 'New'
+        'COLLECTION_NAME' : 'QA'
     }
 
     PATIENCE = 15
@@ -43,7 +43,7 @@ class NewSpider(scrapy.Spider):
             product['subtitle'] = subtitle
             product['image_url'] = response.urljoin(image_url)
 
-            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product), dont_filter=True)
+            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product))
         
         secondary_page_links = response.css("a.css-1tqdl5x")
         yield from response.follow_all(secondary_page_links, callback = self.parse_secondary_page)
@@ -74,7 +74,7 @@ class NewSpider(scrapy.Spider):
             product['title'] = title
             product['subtitle'] = subtitle
             product['image_url'] = response.urljoin(image_url)
-            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product), dont_filter=True)
+            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product))
         
 
         #Keep clicking on more button
@@ -98,7 +98,7 @@ class NewSpider(scrapy.Spider):
             product['title'] = title
             product['subtitle'] = subtitle
             product['image_url'] = response.urljoin(image_url)
-            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product), dont_filter=True)
+            yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product))
 
 
 

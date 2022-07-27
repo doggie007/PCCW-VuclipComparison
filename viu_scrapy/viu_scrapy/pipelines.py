@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 import pymongo
 from itemadapter import ItemAdapter
+from scrapy.exceptions import DropItem
 # from scrapy.utils.project import get_project_settings
 import logging
 
@@ -35,8 +36,14 @@ class MongoDBPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[spider.settings.get('COLLECTION_NAME')].insert_one(ItemAdapter(item).asdict())
-        return item
+        adapter = ItemAdapter(item)
+        # Update if is a duplicated item
+        if self.db[spider.settings.get('COLLECTION_NAME')].find_one({'_id': adapter['_id']}) != None:
+            raise DropItem("Duplicate item found")
+            # self.db[spider.settings.get('COLLECTION_NAME')].find_one_and_update()
+        else:
+            self.db[spider.settings.get('COLLECTION_NAME')].insert_one(ItemAdapter(item).asdict())
+            return item
 
     """
     def __init__(self):

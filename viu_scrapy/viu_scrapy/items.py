@@ -22,3 +22,24 @@ class CurrentProductItem(scrapy.Item):
     series_id = scrapy.Field()
     synopsis = scrapy.Field()
     image_url = scrapy.Field()
+    url = scrapy.Field()
+    episode_details = scrapy.Field()
+    series_details = scrapy.Field()
+
+
+class NewerProductItem(scrapy.Item):
+    _id = scrapy.Field()
+
+    product_name = scrapy.Field()
+    series_name = scrapy.Field()
+    category_name = scrapy.Field()
+
+    series_id = scrapy.Field()
+    category_id = scrapy.Field()
+
+    synopsis = scrapy.Field()
+    
+    image_url = scrapy.Field()
+    url = scrapy.Field()
+    isMovie = scrapy.Field()
+

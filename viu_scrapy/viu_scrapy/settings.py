@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'viu_scrapy.spiders'
 #USER_AGENT = 'viu_scrapy (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 
 # User Settings
@@ -25,10 +25,12 @@ FEED_EXPORT_ENCODING = 'utf-8'
 HTTPERROR_ALLOWED_CODES = [404]
 
 # MONGO DB SETTINGS
-USERNAME = "admin"
-PASSWORD = "fZ3XJTxZ1HxRKTWH"
-MONGO_URI = f'mongodb+srv://{USERNAME}:{PASSWORD}@viustarting.jqgssgy.mongodb.net/'
-MONGO_DATABASE = 'Viu'
+# USERNAME = "admin"
+# PASSWORD = "fZ3XJTxZ1HxRKTWH"
+# MONGO_URI = f'mongodb+srv://{USERNAME}:{PASSWORD}@viustarting.jqgssgy.mongodb.net/'
+# MONGO_DATABASE = 'Viu'
+MONGO_URI = 'mongodb://localhost:27017'
+MONGO_DATABASE = 'Newer'
 
 
 
