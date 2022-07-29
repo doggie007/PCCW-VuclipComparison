@@ -10,12 +10,11 @@ from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 # from scrapy.utils.project import get_project_settings
 import logging
+from .items import Series, Episode, Movie
 
 # settings = get_project_settings()
 
 class MongoDBPipeline:
-
-    collection_name = 'scrapy_items'
 
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
@@ -37,13 +36,32 @@ class MongoDBPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        # Update if is a duplicated item
-        if self.db[spider.settings.get('COLLECTION_NAME')].find_one({'_id': adapter['_id']}) != None:
-            raise DropItem("Duplicate item found")
-            # self.db[spider.settings.get('COLLECTION_NAME')].find_one_and_update()
+
+        # # Update if is a duplicated item
+        # if self.db[spider.settings.get('COLLECTION_NAME')].find_one({'_id': adapter['_id']}) != None:
+        #     raise DropItem("Duplicate item found")
+        #     # self.db[spider.settings.get('COLLECTION_NAME')].find_one_and_update()
+        # else:
+        #     self.db[spider.settings.get('COLLECTION_NAME')].insert_one(ItemAdapter(item).asdict())
+        #     return item
+
+        if isinstance(item, Movie):
+            collection_name = "Movies"
+        elif isinstance(item, Series):
+            collection_name = "Series"
+        elif isinstance(item, Episode):
+            collection_name = "Episodes"
         else:
-            self.db[spider.settings.get('COLLECTION_NAME')].insert_one(ItemAdapter(item).asdict())
             return item
+        
+        # Update if is not a duplicated item
+        if self.db[collection_name].find_one({'_id': adapter['_id']}) != None:
+            raise DropItem("Duplicate item found")
+        else:
+            self.db[collection_name].insert_one(adapter.asdict())
+            return item
+        
+
 
     """
     def __init__(self):

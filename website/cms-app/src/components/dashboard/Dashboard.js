@@ -22,9 +22,11 @@ import { mainListItems } from "./listItems";
 import Chart from "./Chart";
 import Deposits from "./Deposits";
 import Orders from "./Orders";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // import ListView from "./DataList";
-import CollapsibleTable from "./ImprovedDataList";
+// import CollapsibleTable from "./ImprovedDataList";
+import NewerTable from "./NewerDataList";
 import AnotherCollapsibleTable from "./AnotherList";
 // import NewListView from "./NewDataList";
 
@@ -224,7 +226,11 @@ function DashboardContent() {
 								</Paper>
 							</Grid> */}
 
-						<CollapsibleTable></CollapsibleTable>
+						{/* <CollapsibleTable></CollapsibleTable> */}
+						{/* <Box sx={{ display: "flex" }}>
+							<CircularProgress></CircularProgress>
+						</Box> */}
+						<NewerTable></NewerTable>
 						{/* <Grid item xs={12}>
 								<Paper>
 									<NewListView></NewListView>
