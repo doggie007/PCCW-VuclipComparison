@@ -13,18 +13,18 @@ module.exports = {
 		client.connect(function (err, db) {
 			// Verify we got a good "db" object
 			if (db) {
-				_dbAttempt = db.db("Attempt");
-				_dbProduction = db.db("Production");
+				_dbOld = db.db("oldQA");
+				_dbNew = db.db("newQA");
 				console.log("Successfully connected to MongoDB.");
 			}
 			return callback(err);
 		});
 	},
 
-	getDbAttempt: function () {
-		return _dbAttempt;
+	getOldDb: function () {
+		return _dbOld;
 	},
-	getDbProduction: function () {
-		return _dbProduction;
+	getNewDb: function () {
+		return _dbNew;
 	},
 };

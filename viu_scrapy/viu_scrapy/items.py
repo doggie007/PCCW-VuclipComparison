@@ -68,9 +68,9 @@ class Series(scrapy.Item):
     series_name = scrapy.Field()
     category_name = scrapy.Field()
     image_url = scrapy.Field()
-    synopsis = scrapy.Field() # only if main page
+    # synopsis = scrapy.Field() #replaced by episode name
     summary = scrapy.Field() #subpage, else child
-    latest_episode_url = scrapy.Field()
+    url = scrapy.Field()
 
 class Episode(scrapy.Item):
     _id = scrapy.Field() #product_id
@@ -83,8 +83,8 @@ class Episode(scrapy.Item):
 
 
 class Movie(scrapy.Item):
-    _id = scrapy.Field() #product_id
-    series_id = scrapy.Field()
+    _id = scrapy.Field() #series_id
+    product_id = scrapy.Field()
     product_name = scrapy.Field() #product name is same as category name
     category_name = scrapy.Field()
     image_url = scrapy.Field()

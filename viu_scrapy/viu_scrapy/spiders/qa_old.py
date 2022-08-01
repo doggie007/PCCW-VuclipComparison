@@ -1,4 +1,3 @@
-import time
 import scrapy
 from scrapy import Selector
 from selenium import webdriver
@@ -6,13 +5,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from ..items import Series, Movie
+from ..items import Series, Movie, Episode
 from ..helper import LinkPageProcessor
 
 
 
-class QANewerSpider(scrapy.Spider):
-    name = "newer_qa"
+class QAOlderSpider(scrapy.Spider):
+    name = "older_qa"
 
     start_urls = ["https://qa-1viu.ottuat.com/ott/hk/zh-hk/"]
 
@@ -20,7 +19,7 @@ class QANewerSpider(scrapy.Spider):
     #     'COLLECTION_NAME' : 'QA_NEW'
     # }
 
-    PATIENCE = 5
+    PATIENCE = 10
 
     def __init__(self):
         #Configure chrome browser
@@ -28,7 +27,8 @@ class QANewerSpider(scrapy.Spider):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("log-level=3")
         self.driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=r"C:\Users\james\Desktop\My Stuff\PCCW\PCCW-VuclipComparison\chromedriver")
-        self.seen_series = set()
+        self.seen_series = set() #filters by series id
+        self.seen_product = set() #filters by product id
 
     
     def __del__(self):
@@ -50,6 +50,7 @@ class QANewerSpider(scrapy.Spider):
         rendered_response = self.get_driver_response()
 
         stored_products = []
+        stored_episodes = []
 
         for container in rendered_response.xpath('//div[contains(@class, "item")]'):
 
@@ -59,16 +60,117 @@ class QANewerSpider(scrapy.Spider):
             
 
             def get_div_attribute(attribute_name):
-                return container.css(f"::attr({attribute_name})").get()
+                return container.css(f"::attr({attribute_name})").get().strip()
 
             try:
                 product_name = get_div_attribute("data-product-name")
                 series_name = get_div_attribute("data-series-name")
                 category_name = get_div_attribute("data-product-category-name")
 
+                product_number = int(get_div_attribute("data-product-number"))
                 product_id = int(get_div_attribute("data-product-id"))
                 series_id = int(get_div_attribute("data-series-id"))
 
+
+                synopsis = get_div_attribute("data-product-synopsis")
+                image_url = container.css("img::attr(src)").get()
+                link_page_url = container.css("a::attr(href)").get()
+            except:
+                continue
+            
+
+            if product_id in self.seen_product:
+                continue
+            elif isMovie:
+                assert not (series_id in self.seen_series)
+                product = Movie()
+                product['_id'] = series_id
+                product['product_id'] = product_id
+                product['product_name'] = product_name
+                product['category_name'] = category_name
+                product['image_url'] = response.urljoin(image_url)
+                product['url'] = response.urljoin(link_page_url)
+                product['synopsis'] = synopsis
+                #Get summary from subpage
+                stored_products.append(product)
+
+            else:
+                if not (series_id in self.seen_series):
+                    # Create a new series item
+                    assert not isMovie
+                    product = Series()
+                    product['_id'] = series_id
+                    product['series_name'] = series_name
+                    product['category_name'] = category_name
+                    product['image_url'] = response.urljoin(image_url)
+                    product['url'] = response.urljoin(link_page_url)
+                    #Get summary from subpage
+                    stored_products.append(product)
+
+            
+                # Create an episode
+                episode = Episode()
+                episode['_id'] = product_id
+                episode['series_id'] = series_id
+                episode['episode_name'] = synopsis
+                episode['episode_number'] = product_number
+                episode['url'] = response.urljoin(link_page_url)
+                episode['cover_img_url'] = response.urljoin(image_url)
+
+                stored_episodes.append(episode)
+
+
+            self.seen_product.add(product_id)
+            self.seen_series.add(series_id)
+
+
+        link_processor = LinkPageProcessor()
+        yield from link_processor.process_products(stored_products)
+        yield from link_processor.process_episodes(stored_episodes)
+
+        # yield from stored_products
+
+        # display_alls = rendered_response.css("a.show_all")
+        # print(display_alls)
+        # yield from response.follow_all(display_alls, callback=self.parse_subpage)
+
+
+
+        # yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product))
+        
+
+        # anchors = response.css("ul.v-nav li a")
+        # yield from response.follow_all(anchors, callback=self.parse_subpage)
+    """
+    def parse_subpage(self, response):
+        self.driver.get(response.url)
+        while True:
+            try:
+                # Wait for loading
+                btn = WebDriverWait(self.driver, self.PATIENCE).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".load-more-btn")))
+                btn.click()
+            except:
+                # Scrolled to end of page
+                break
+
+        rendered_response = self.get_driver_response()
+
+        for container in rendered_response.css("#cat_list").xpath("//div[starts-with(@id, 'item_')]"):
+            classes = container.xpath('@class').extract()[0].split()
+            isMovie = True if "movieThumb" in classes else False
+
+            def get_div_attribute(attribute_name):
+                return container.css(f"::attr({attribute_name})").get()
+
+            try:
+                series_name = get_div_attribute("series_name")
+                category_name = get_div_attribute("category_name")
+
+                product_id = int(get_div_attribute("product_id"))
+                series_id = int(get_div_attribute("series_id"))
+
+                # category_id = int(get_div_attribute("data-product-category-id"))
+                # product_number = int(get_div_attribute("data-product-number"))
 
                 synopsis = get_div_attribute("data-product-synopsis")
                 image_url = container.css("img::attr(src)").get()
@@ -85,7 +187,7 @@ class QANewerSpider(scrapy.Spider):
                 product = Movie()
                 product['_id'] = product_id
                 product['series_id'] = series_id
-                product['product_name'] = product_name
+                product['product_name'] = series_name
                 product['category_name'] = category_name
                 product['image_url'] = response.urljoin(image_url)
                 product['url'] = response.urljoin(link_page_url)
@@ -101,63 +203,8 @@ class QANewerSpider(scrapy.Spider):
                 product['synopsis'] = synopsis
                 product['image_url'] = response.urljoin(image_url)
                 product['latest_episode_url'] = response.urljoin(link_page_url)
-                #Get summary from subpage
-
-            stored_products.append(product)
-        print(len(stored_products))
-        # link_processor = LinkPageProcessor()
-        # yield from link_processor.process(stored_products)
-        yield from stored_products
-
-
-
-        # yield response.follow(link_page_url, self.parse_link_page, cb_kwargs=dict(product=product))
-        
-
-        # anchors = response.css("ul.v-nav li a")
-        # yield from response.follow_all(anchors, callback=self.parse_subpage)
-
-    # def parse_subpage(self, response):
-    #     self.driver.get(response.url)
-    #     while True:
-    #         try:
-    #             # Wait for loading
-    #             btn = WebDriverWait(self.driver, self.PATIENCE).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".load-more-btn")))
-    #             btn.click()
-    #         except:
-    #             # Scrolled to end of page
-    #             break
-
-    #     rendered_response = self.get_driver_response()
-
-    #     for container in rendered_response.css("#cat_list").xpath("//div[starts-with(@id, 'item_')]"):
-    #         classes = container.xpath('@class').extract()[0].split()
-    #         isMovie = True if "movieThumb" in classes else False
-
-    #         def get_div_attribute(attribute_name):
-    #             return container.css(f"::attr({attribute_name})").get()
-
-    #         try:
-    #             series_name = get_div_attribute("series_name")
-    #             category_name = get_div_attribute("category_name")
-
-    #             product_id = int(get_div_attribute("product_id"))
-
-    #             series_id = int(get_div_attribute("series_id"))
-
-    #             category_id = int(get_div_attribute("data-product-category-id"))
-    #             product_number = int(get_div_attribute("data-product-number"))
-
-    #             synopsis = get_div_attribute("data-product-synopsis")
-    #             image_url = container.css("img::attr(src)").get()
-    #             link_page_url = container.css("a::attr(href)").get()
-    #         except:
-    #             continue
-            
-    #         if product_id in self.seen:
-    #             continue
-    #         else:
-    #             self.seen.add(product_id)
+            yield product
+    """
 
     #         # product['product_name'] = get_div_attribute("series_name")
 

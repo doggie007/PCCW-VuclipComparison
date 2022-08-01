@@ -9,7 +9,7 @@ const recordRoutes = express.Router();
 const dbo = require("../db/conn");
 
 // This help convert the id from string to ObjectId for the _id.
-const ObjectId = require("mongodb").ObjectId;
+// const ObjectId = require("mongodb").ObjectId;
 
 // function getValidatedList(result, keyName) {
 // 	// Remove items without title/name
@@ -79,29 +79,17 @@ const ObjectId = require("mongodb").ObjectId;
 // 		});
 // });
 
-recordRoutes.route("/data/attempt/series").get(function (req, res) {
-	let db_connect = dbo.getDbAttempt();
-	db_connect
-		.collection("Series")
-		.find({})
-		.toArray(function (err, result) {
-			if (err) throw err;
-			res.json(result);
-			// res.json(getValidatedList(result, "title"));
-		});
-});
-
-recordRoutes.route("/data/production/series").get(function (req, res) {
-	let db_connect = dbo.getDbProduction();
-	db_connect
-		.collection("Series")
-		.find({})
-		.toArray(function (err, result) {
-			if (err) throw err;
-			res.json(result);
-			// res.json(getValidatedList(result, "title"));
-		});
-});
+// recordRoutes.route("/data/attempt/series").get(function (req, res) {
+// 	let db_connect = dbo.getDbAttempt();
+// 	db_connect
+// 		.collection("Series")
+// 		.find({})
+// 		.toArray(function (err, result) {
+// 			if (err) throw err;
+// 			res.json(result);
+// 			// res.json(getValidatedList(result, "title"));
+// 		});
+// });
 
 // function processImgUrls(episodes) {
 // 	episodes = episodes.map(function (episode) {
@@ -114,18 +102,102 @@ recordRoutes.route("/data/production/series").get(function (req, res) {
 // 	return episodes;
 // }
 
-// recordRoutes
-// 	.route("/data/attempt/:seriesId(\\d+)/episodes")
-// 	.get(function (req, res) {
-// 		var seriesId = parseInt(req.params.seriesId);
-// 		let db_connect = dbo.getDb();
-// 		db_connect
-// 			.collection("Episodes")
-// 			.find({ series_id: seriesId })
-// 			.toArray(function (err, result) {
-// 				if (err) throw err;
-// 				res.json(processImgUrls(result));
-// 			});
-// 	});
+function processSummary(products) {
+	return products.map(function (product) {
+		if (
+			product["summary"] !== null &&
+			product["summary"] !== undefined &&
+			product["summary"].startsWith("節目簡介: ")
+		) {
+			product["summary"] = product["summary"].substring(6);
+		}
+		return product;
+	});
+}
+
+function processEpisodes(products) {
+	return products.map(function (product) {
+		if (
+			product["episode_details"] !== null &&
+			product["episode_details"] !== undefined &&
+			product["episode_details"].startsWith("節目簡介: ")
+		) {
+			product["episode_details"] = product["episode_details"].substring(6);
+		}
+		return product;
+	});
+}
+
+recordRoutes.route("/data/new/series").get(function (req, res) {
+	let db_connect = dbo.getNewDb();
+	db_connect
+		.collection("Series")
+		.find({})
+		.toArray(function (err, result) {
+			if (err) throw err;
+			res.json(result);
+		});
+});
+
+recordRoutes
+	.route("/data/new/:seriesId(\\d+)/episodes")
+	.get(function (req, res) {
+		var seriesId = parseInt(req.params.seriesId);
+		let db_connect = dbo.getNewDb();
+		db_connect
+			.collection("Episodes")
+			.find({ series_id: seriesId })
+			.toArray(function (err, result) {
+				if (err) throw err;
+				res.json(processEpisodes(result));
+			});
+	});
+
+recordRoutes.route("/data/new/movies").get(function (req, res) {
+	let db_connect = dbo.getNewDb();
+	db_connect
+		.collection("Movies")
+		.find({})
+		.toArray(function (err, result) {
+			if (err) throw err;
+			res.json(processSummary(result));
+		});
+});
+
+recordRoutes.route("/data/old/series").get(function (req, res) {
+	let db_connect = dbo.getOldDb();
+	db_connect
+		.collection("Series")
+		.find({})
+		.toArray(function (err, result) {
+			if (err) throw err;
+			res.json(processSummary(result));
+		});
+});
+
+recordRoutes.route("/data/old/movies").get(function (req, res) {
+	let db_connect = dbo.getOldDb();
+	db_connect
+		.collection("Movies")
+		.find({})
+		.toArray(function (err, result) {
+			if (err) throw err;
+			res.json(processSummary(result));
+		});
+});
+
+recordRoutes
+	.route("/data/old/:seriesId(\\d+)/episodes")
+	.get(function (req, res) {
+		var seriesId = parseInt(req.params.seriesId);
+		let db_connect = dbo.getOldDb();
+		db_connect
+			.collection("Episodes")
+			.find({ series_id: seriesId })
+			.toArray(function (err, result) {
+				if (err) throw err;
+				res.json(processEpisodes(result));
+			});
+	});
 
 module.exports = recordRoutes;

@@ -19,9 +19,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems } from "./listItems";
-import Chart from "./Chart";
-import Deposits from "./Deposits";
-import Orders from "./Orders";
+
 import CircularProgress from "@mui/material/CircularProgress";
 
 // import ListView from "./DataList";
@@ -44,19 +42,6 @@ function Copyright(props) {
 		</Typography>
 	);
 }
-
-// const rows = [
-// 	{ id: 1, col1: "Hello", col2: "World" },
-// 	{ id: 2, col1: "DataGridPro", col2: "is Awesome" },
-// 	{ id: 3, col1: "MUI", col2: "is Amazing" },
-// ];
-
-// const columns = [
-// 	{ field: "col1", headerName: "Column 1", width: 150 },
-// 	{ field: "col2", headerName: "Column 2", width: 150 },
-// ];
-
-const someData = { 1: 2 };
 
 const drawerWidth = 240;
 

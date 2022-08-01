@@ -30,7 +30,7 @@ HTTPERROR_ALLOWED_CODES = [404]
 # MONGO_URI = f'mongodb+srv://{USERNAME}:{PASSWORD}@viustarting.jqgssgy.mongodb.net/'
 # MONGO_DATABASE = 'Viu'
 MONGO_URI = 'mongodb://localhost:27017'
-MONGO_DATABASE = 'Production'
+MONGO_DATABASE = 'newQA'
 
 
 

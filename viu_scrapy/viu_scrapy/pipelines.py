@@ -37,14 +37,6 @@ class MongoDBPipeline:
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
 
-        # # Update if is a duplicated item
-        # if self.db[spider.settings.get('COLLECTION_NAME')].find_one({'_id': adapter['_id']}) != None:
-        #     raise DropItem("Duplicate item found")
-        #     # self.db[spider.settings.get('COLLECTION_NAME')].find_one_and_update()
-        # else:
-        #     self.db[spider.settings.get('COLLECTION_NAME')].insert_one(ItemAdapter(item).asdict())
-        #     return item
-
         if isinstance(item, Movie):
             collection_name = "Movies"
         elif isinstance(item, Series):
