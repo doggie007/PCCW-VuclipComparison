@@ -19,14 +19,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems } from "./listItems";
-
 import CircularProgress from "@mui/material/CircularProgress";
 
 // import ListView from "./DataList";
 // import CollapsibleTable from "./ImprovedDataList";
-import NewerTable from "./NewerDataList";
-import AnotherCollapsibleTable from "./AnotherList";
-// import NewListView from "./NewDataList";
+import SeriesTable from "./SeriesDataList";
+import MovieTable from "./MovieDataList";
 
 function Copyright(props) {
 	return (
@@ -96,13 +94,13 @@ const mdTheme = createTheme({
 			sm: 600,
 			md: 900,
 			lg: 1200,
-			xl: 1536,
+			xl: 1600,
 		},
 	},
 });
 
 function DashboardContent() {
-	const [open, setOpen] = React.useState(true);
+	const [open, setOpen] = React.useState(false);
 	const toggleDrawer = () => {
 		setOpen(!open);
 	};
@@ -169,59 +167,15 @@ function DashboardContent() {
 				>
 					<Toolbar />
 					<Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-						{/* <Grid container rowSpacing={4}> */}
-						{/* Chart */}
-						{/* <Grid item xs={12} md={8} lg={9}>
-								<Paper
-									sx={{
-										p: 2,
-										display: "flex",
-										flexDirection: "column",
-										height: 240,
-									}}
-								>
-									<Chart />
-								</Paper>
-							</Grid> */}
-
-						{/* Recent Deposits */}
-						{/* <Grid item xs={12} md={4} lg={3}>
-								<Paper
-									sx={{
-										p: 2,
-										display: "flex",
-										flexDirection: "column",
-										height: 240,
-									}}
-								>
-									<Deposits />
-								</Paper>
-							</Grid> */}
-
-						{/* sx={{ p: 2, display: "flex", flexDirection: "column" }} */}
-						{/* <Grid item xs={12}>
-								<Paper>
-									<div style={{ height: "50vh", width: "100%" }}>
-										<div style={{ display: "flex", height: "100%" }}>
-											<div style={{ flexGrow: 1 }}>
-												<DataGrid rows={rows} columns={columns} />
-											</div>
-										</div>
-									</div>
-								</Paper>
-							</Grid> */}
-
-						{/* <CollapsibleTable></CollapsibleTable> */}
-						{/* <Box sx={{ display: "flex" }}>
-							<CircularProgress></CircularProgress>
-						</Box> */}
-						<NewerTable></NewerTable>
-						{/* <Grid item xs={12}>
-								<Paper>
-									<NewListView></NewListView>
-								</Paper>
-							</Grid> */}
-						{/* </Grid> */}
+						<Grid container rowSpacing={4}>
+							<Grid item xs={12}>
+								<SeriesTable></SeriesTable>
+							</Grid>
+							<Divider></Divider>
+							<Grid item xs={12}>
+								<MovieTable></MovieTable>
+							</Grid>
+						</Grid>
 					</Container>
 				</Box>
 			</Box>

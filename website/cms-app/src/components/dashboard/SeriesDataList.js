@@ -15,9 +15,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Typography from "@mui/material/Typography";
 import { Image } from "mui-image";
-import { Grid } from "@mui/material";
-import { Container } from "@mui/system";
-import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
 
@@ -46,7 +43,11 @@ function EpisodeRow(props) {
 	const { newEpisode, oldEpisode } = props;
 	return (
 		<React.Fragment>
-			<TableRow>
+			<TableRow
+				sx={{
+					backgroundColor: "rgba(0,0, 0, 0.05)",
+				}}
+			>
 				<TableCell>{newEpisode.source}</TableCell>
 
 				<TableCell>{newEpisode._id}</TableCell>
@@ -180,11 +181,7 @@ function EpisodesTable(props) {
 				sx={{ margin: 1, padding: 1, borderRadius: 3 }}
 				style={{ background: "#C3EAC4" }}
 			>
-				<Table
-					size="small"
-					aria-label="caption"
-					style={{ width: "auto", tableLayout: "auto" }}
-				>
+				<Table size="small" aria-label="caption">
 					{/* <caption>New website: series ID is generated</caption> */}
 					<TableHead>
 						<TableRow>
@@ -200,7 +197,7 @@ function EpisodesTable(props) {
 							<TableCell>
 								<Typography>Details</Typography>
 							</TableCell>
-							<TableCell align="center">
+							<TableCell>
 								<Typography>Image</Typography>
 							</TableCell>
 						</TableRow>
@@ -287,7 +284,6 @@ InnerRow.propTypes = {
 
 function Row(props) {
 	const { row } = props;
-	const [rows, setRows] = useState([]);
 	const [open, setOpen] = useState(false);
 
 	// var synopsisMatch = getStringSimilarity(
@@ -395,7 +391,7 @@ Row.propTypes = {
 	}).isRequired,
 };
 
-export default function NewerTable() {
+export default function SeriesTable() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [rows, setRows] = useState([]);
@@ -484,9 +480,6 @@ export default function NewerTable() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{/* {rows.map((row) => (
-						<Row row={row} />
-					))} */}
 						{rows
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((row, i) => {
