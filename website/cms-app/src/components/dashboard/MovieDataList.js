@@ -24,6 +24,7 @@ import Link from "@mui/material/Link";
 import Title from "./Title";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { renderMatches } from "react-router-dom";
 
 var stringSimilarity = require("string-similarity");
 
@@ -31,6 +32,9 @@ function getStringSimilarity(s1, s2) {
 	return stringSimilarity.compareTwoStrings(s1 || "", s2 || "");
 }
 function round3dp(num) {
+	if (num === -1) {
+		return -1;
+	}
 	return Math.round(num * 1000) / 10;
 }
 
@@ -82,25 +86,65 @@ function Row(props) {
 	const { row } = props;
 	const [open, setOpen] = useState(false);
 
-	// var synopsisMatch = getStringSimilarity(
-	// 	row.newData.synopsis,
-	// 	row.productionData.synopsis
-	// );
+	if (
+		row.newDat.synopsis === undefined ||
+		row.oldDat.synopsis === undefined ||
+		row.newDat.synopsis === null ||
+		row.oldDat.synopsis === null
+	) {
+		var synopsisMatch = -1;
+	} else {
+		var synopsisMatch = getStringSimilarity(
+			row.newDat.synopsis,
+			row.oldDat.synopsis
+		);
+	}
+
+	if (
+		row.newDat.summary === undefined ||
+		row.oldDat.summary === undefined ||
+		row.newDat.summary === null ||
+		row.oldDat.summary === null
+	) {
+		var summaryMatch = -1;
+	} else {
+		var summaryMatch = getStringSimilarity(
+			row.newDat.summary,
+			row.oldDat.summary
+		);
+	}
 	// var categoryMatch = getStringSimilarity(
 	// 	row.newData.subtitle,
 	// 	row.productionData.category_name
 	// );
 	// var overallSimilarity = round3dp((synopsisMatch + categoryMatch) / 2);
-	// synopsisMatch = round3dp(synopsisMatch);
-	// categoryMatch = round3dp(categoryMatch);
+	synopsisMatch = round3dp(synopsisMatch);
+	summaryMatch = round3dp(summaryMatch);
 
-	// function getChipColor(similarity) {
-	// 	return similarity === 100
-	// 		? "success"
-	// 		: similarity > 75
-	// 		? "warning"
-	// 		: "error";
-	// }
+	let synopsisChip, summaryChip;
+	if (synopsisMatch === -1) {
+		synopsisChip = <Chip label={"Insufficient Data"} />;
+	} else {
+		synopsisChip = (
+			<Chip label={synopsisMatch + "%"} color={getChipColor(synopsisMatch)} />
+		);
+	}
+	if (summaryMatch === -1) {
+		summaryChip = <Chip label={"Insufficient Data"} />;
+	} else {
+		summaryChip = (
+			<Chip label={summaryMatch + "%"} color={getChipColor(summaryMatch)} />
+		);
+	}
+	function getChipColor(similarity) {
+		return similarity === 100
+			? "success"
+			: similarity > 75
+			? "warning"
+			: similarity === -1
+			? "secondary"
+			: "error";
+	}
 
 	return (
 		<React.Fragment>
@@ -119,6 +163,10 @@ function Row(props) {
 						{row.newDat.product_name}
 					</Typography>
 				</TableCell>
+				{/* <TableCell component="th" scope="row">
+					<Chip label={summaryMatch + "%"} color={getChipColor(summaryMatch)} />
+				</TableCell> */}
+				<TableCell></TableCell>
 			</TableRow>
 			<TableRow>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -144,9 +192,11 @@ function Row(props) {
 										</TableCell>
 										<TableCell>
 											<Typography>Synopsis</Typography>
+											{synopsisChip}
 										</TableCell>
 										<TableCell>
 											<Typography>Summary</Typography>
+											{summaryChip}
 										</TableCell>
 										<TableCell>
 											<Typography>Image</Typography>
@@ -243,7 +293,7 @@ export default function MovieTable() {
 	return (
 		<Box>
 			<Title>Movies</Title>
-			<TableContainer component={Paper} sx={{ maxHeight: "85vh" }}>
+			<TableContainer component={Paper} sx={{ height: "85vh" }}>
 				<Table stickyHeader aria-label="collapsible table">
 					<TableHead>
 						<TableRow>

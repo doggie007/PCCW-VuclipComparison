@@ -21,6 +21,8 @@ import Link from "@mui/material/Link";
 import Title from "./Title";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { Grid } from "@mui/material";
+import { Divider } from "@mui/material";
 
 var stringSimilarity = require("string-similarity");
 
@@ -28,72 +30,128 @@ function getStringSimilarity(s1, s2) {
 	return stringSimilarity.compareTwoStrings(s1 || "", s2 || "");
 }
 function round3dp(num) {
+	if (num === -1) {
+		return -1;
+	}
 	return Math.round(num * 1000) / 10;
+}
+
+function getChipColor(similarity) {
+	return similarity === 100
+		? "success"
+		: similarity > 75
+		? "warning"
+		: similarity === -1
+		? "secondary"
+		: "error";
 }
 
 const API_ENDPOINT = "http://localhost:5000";
 
-function manipulateImageURL(link) {
-	const url = new URL(link);
-	url.searchParams.set("p", "100");
-	return url.href;
-}
-
 function EpisodeRow(props) {
 	const { newEpisode, oldEpisode } = props;
+	if (
+		newEpisode.episode_details === undefined ||
+		oldEpisode.episode_details === undefined ||
+		newEpisode.episode_details === null ||
+		oldEpisode.episode_details === null
+	) {
+		var detailsMatch = -1;
+	} else {
+		var detailsMatch = getStringSimilarity(
+			newEpisode.episode_details,
+			oldEpisode.episode_details
+		);
+	}
+
+	let detailsChip;
+	detailsMatch = round3dp(detailsMatch);
+	if (detailsMatch === -1) {
+		detailsChip = <Chip label={"Insufficient Data"} />;
+	} else {
+		detailsChip = (
+			<Chip label={detailsMatch + "%"} color={getChipColor(detailsMatch)} />
+		);
+	}
+
 	return (
 		<React.Fragment>
-			<TableRow
-				sx={{
-					backgroundColor: "rgba(0,0, 0, 0.05)",
-				}}
-			>
-				<TableCell>{newEpisode.source}</TableCell>
-
-				<TableCell>{newEpisode._id}</TableCell>
-				<TableCell style={{ whiteSpace: "nowrap" }}>
-					<Link href={newEpisode.url}>
-						{"Ep. "}
-						{newEpisode.episode_number}
-					</Link>
-					{"  "}
-					{newEpisode.episode_name}
-				</TableCell>
-				<TableCell>{newEpisode.episode_details}</TableCell>
-				<TableCell>
-					<Image
-						src={newEpisode.cover_img_url}
-						duration={1500}
-						width={350}
+			<Table size="small" aria-label="caption">
+				{/* <caption>New website: series ID is generated</caption> */}
+				<TableHead>
+					<TableRow>
+						<TableCell></TableCell>
+						<TableCell>
+							<Typography style={{ whiteSpace: "nowrap" }}>
+								Product ID
+							</Typography>
+						</TableCell>
+						<TableCell>
+							<Typography>Episode</Typography>
+						</TableCell>
+						<TableCell>
+							<Typography>Details</Typography>
+							{detailsChip}
+						</TableCell>
+						<TableCell>
+							<Typography>Image</Typography>
+						</TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
+					<TableRow
 						sx={{
-							maxWidth: { xs: 350, md: 300 },
+							backgroundColor: "rgba(0,0, 0, 0.05)",
 						}}
-					/>
-				</TableCell>
-			</TableRow>
-			<TableRow>
-				<TableCell>{oldEpisode.source}</TableCell>
-				<TableCell>{oldEpisode._id}</TableCell>
-				<TableCell style={{ whiteSpace: "nowrap" }}>
-					<Link href={oldEpisode.url}>
-						{"Ep. "}
-						{oldEpisode.episode_number}
-					</Link>
-					{oldEpisode.episode_name}
-				</TableCell>
-				<TableCell>{oldEpisode.episode_details}</TableCell>
+					>
+						<TableCell>{newEpisode.source}</TableCell>
 
-				<TableCell>
-					<Image
-						src={oldEpisode.cover_img_url}
-						duration={1500}
-						width={350}
-						sx={{
-							maxWidth: { xs: 350, md: 300 },
-						}}
-					/>
-				</TableCell>
-			</TableRow>
+						<TableCell>{newEpisode._id}</TableCell>
+						<TableCell style={{ whiteSpace: "nowrap" }}>
+							<Link href={newEpisode.url}>
+								{"Ep. "}
+								{newEpisode.episode_number}
+							</Link>
+							{"  "}
+							{newEpisode.episode_name}
+						</TableCell>
+						<TableCell>{newEpisode.episode_details}</TableCell>
+						<TableCell>
+							<Image
+								src={newEpisode.cover_img_url}
+								duration={1500}
+								width={350}
+								sx={{
+									maxWidth: { xs: 350, md: 300 },
+								}}
+							/>
+						</TableCell>
+					</TableRow>
+					<TableRow>
+						<TableCell>{oldEpisode.source}</TableCell>
+						<TableCell>{oldEpisode._id}</TableCell>
+						<TableCell style={{ whiteSpace: "nowrap" }}>
+							<Link href={oldEpisode.url}>
+								{"Ep. "}
+								{oldEpisode.episode_number}
+							</Link>
+							{oldEpisode.episode_name}
+						</TableCell>
+						<TableCell>{oldEpisode.episode_details}</TableCell>
+
+						<TableCell>
+							<Image
+								src={oldEpisode.cover_img_url}
+								duration={1500}
+								width={350}
+								sx={{
+									maxWidth: { xs: 350, md: 300 },
+								}}
+							/>
+						</TableCell>
+					</TableRow>
+				</TableBody>
+			</Table>
 		</React.Fragment>
 	);
 }
@@ -177,43 +235,25 @@ function EpisodesTable(props) {
 
 	return (
 		<React.Fragment>
-			<Box
-				sx={{ margin: 1, padding: 1, borderRadius: 3 }}
-				style={{ background: "#C3EAC4" }}
-			>
-				<Table size="small" aria-label="caption">
-					{/* <caption>New website: series ID is generated</caption> */}
-					<TableHead>
-						<TableRow>
-							<TableCell></TableCell>
-							<TableCell>
-								<Typography style={{ whiteSpace: "nowrap" }}>
-									Product ID
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>Episode</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>Details</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>Image</Typography>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{data.map((dat, i) => {
-							return (
-								<EpisodeRow
-									newEpisode={dat.newDat}
-									oldEpisode={dat.oldDat}
-									key={i}
-								></EpisodeRow>
-							);
-						})}
-					</TableBody>
-				</Table>
+			<Box sx={{ margin: 1, padding: 1, borderRadius: 3 }}>
+				<Grid container rowSpacing={1}>
+					{data.map((dat, i) => {
+						return (
+							<Grid item xs={12}>
+								<Box
+									style={{ background: "#C3EAC4", borderRadius: "20px" }}
+									sx={{ p: 3 }}
+								>
+									<EpisodeRow
+										newEpisode={dat.newDat}
+										oldEpisode={dat.oldDat}
+										key={i}
+									></EpisodeRow>
+								</Box>
+							</Grid>
+						);
+					})}
+				</Grid>
 			</Box>
 		</React.Fragment>
 	);
@@ -286,25 +326,30 @@ function Row(props) {
 	const { row } = props;
 	const [open, setOpen] = useState(false);
 
-	// var synopsisMatch = getStringSimilarity(
-	// 	row.newData.synopsis,
-	// 	row.productionData.synopsis
-	// );
-	// var categoryMatch = getStringSimilarity(
-	// 	row.newData.subtitle,
-	// 	row.productionData.category_name
-	// );
-	// var overallSimilarity = round3dp((synopsisMatch + categoryMatch) / 2);
-	// synopsisMatch = round3dp(synopsisMatch);
-	// categoryMatch = round3dp(categoryMatch);
+	if (
+		row.newDat.synopsis === undefined ||
+		row.oldDat.synopsis === undefined ||
+		row.newDat.synopsis === null ||
+		row.oldDat.synopsis === null
+	) {
+		var synopsisMatch = -1;
+	} else {
+		var synopsisMatch = getStringSimilarity(
+			row.newDat.synopsis,
+			row.oldDat.synopsis
+		);
+	}
 
-	// function getChipColor(similarity) {
-	// 	return similarity === 100
-	// 		? "success"
-	// 		: similarity > 75
-	// 		? "warning"
-	// 		: "error";
-	// }
+	synopsisMatch = round3dp(synopsisMatch);
+
+	let synopsisChip;
+	if (synopsisMatch === -1) {
+		synopsisChip = <Chip label={"Insufficient Data"} />;
+	} else {
+		synopsisChip = (
+			<Chip label={synopsisMatch + "%"} color={getChipColor(synopsisMatch)} />
+		);
+	}
 
 	return (
 		<React.Fragment>
@@ -348,6 +393,7 @@ function Row(props) {
 										</TableCell>
 										<TableCell>
 											<Typography>Synopsis</Typography>
+											{synopsisChip}
 										</TableCell>
 										<TableCell align="center">
 											<Typography>Image</Typography>

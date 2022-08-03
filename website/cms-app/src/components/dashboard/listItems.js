@@ -7,6 +7,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PeopleIcon from "@mui/icons-material/People";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import LayersIcon from "@mui/icons-material/Layers";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 export const mainListItems = (
 	<React.Fragment>
@@ -16,6 +17,7 @@ export const mainListItems = (
 			</ListItemIcon>
 			<ListItemText primary="Dashboard" />
 		</ListItemButton>
+
 		{/* <ListItemButton>
 			<ListItemIcon>
 				<ShoppingCartIcon />
