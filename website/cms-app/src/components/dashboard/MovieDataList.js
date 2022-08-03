@@ -37,6 +37,9 @@ function round3dp(num) {
 	}
 	return Math.round(num * 1000) / 10;
 }
+function isEmpty(s) {
+	return s === undefined || s === null || s === "";
+}
 
 const API_ENDPOINT = "http://localhost:5000";
 
@@ -86,12 +89,7 @@ function Row(props) {
 	const { row } = props;
 	const [open, setOpen] = useState(false);
 
-	if (
-		row.newDat.synopsis === undefined ||
-		row.oldDat.synopsis === undefined ||
-		row.newDat.synopsis === null ||
-		row.oldDat.synopsis === null
-	) {
+	if (isEmpty(row.newDat.synopsis) || isEmpty(row.oldDat.synopsis)) {
 		var synopsisMatch = -1;
 	} else {
 		var synopsisMatch = getStringSimilarity(
@@ -100,12 +98,7 @@ function Row(props) {
 		);
 	}
 
-	if (
-		row.newDat.summary === undefined ||
-		row.oldDat.summary === undefined ||
-		row.newDat.summary === null ||
-		row.oldDat.summary === null
-	) {
+	if (isEmpty(row.newDat.summary) || isEmpty(row.oldDat.summary)) {
 		var summaryMatch = -1;
 	} else {
 		var summaryMatch = getStringSimilarity(

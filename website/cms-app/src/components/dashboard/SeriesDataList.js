@@ -45,16 +45,17 @@ function getChipColor(similarity) {
 		? "secondary"
 		: "error";
 }
+function isEmpty(s) {
+	return s === undefined || s === null || s === "";
+}
 
 const API_ENDPOINT = "http://localhost:5000";
 
 function EpisodeRow(props) {
 	const { newEpisode, oldEpisode } = props;
 	if (
-		newEpisode.episode_details === undefined ||
-		oldEpisode.episode_details === undefined ||
-		newEpisode.episode_details === null ||
-		oldEpisode.episode_details === null
+		isEmpty(newEpisode.episode_details) ||
+		isEmpty(oldEpisode.episode_details)
 	) {
 		var detailsMatch = -1;
 	} else {
@@ -326,12 +327,7 @@ function Row(props) {
 	const { row } = props;
 	const [open, setOpen] = useState(false);
 
-	if (
-		row.newDat.synopsis === undefined ||
-		row.oldDat.synopsis === undefined ||
-		row.newDat.synopsis === null ||
-		row.oldDat.synopsis === null
-	) {
+	if (isEmpty(row.newDat.synopsis) || isEmpty(row.oldDat.synopsis)) {
 		var synopsisMatch = -1;
 	} else {
 		var synopsisMatch = getStringSimilarity(
